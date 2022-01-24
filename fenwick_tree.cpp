@@ -6,8 +6,8 @@ struct fenwick_tree {
         if (n >= 0) init(n);
     }
     void init(int n) {
-        BIT.resize(n);
-        this->n = n;
+        BIT.resize(n + 1);
+        this->n = n + 1;
     }
     void update(int i, T add) {
         while (i < n) {
