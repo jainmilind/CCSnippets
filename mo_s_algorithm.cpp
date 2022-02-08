@@ -6,7 +6,7 @@ void add(int idx) {
 int get_answer() {
 }     // TODO: extract the current answer of the data structure
 
-int block_size; // TODO: Add Block_size
+const int block_size; // TODO: Add Block_size
 
 struct Query {
     int l, r, idx;
