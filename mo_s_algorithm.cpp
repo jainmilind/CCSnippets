@@ -1,49 +1,51 @@
-int cur = 0;
-void remove(int idx) {
-}     // TODO: remove value at idx from data structure
-void add(int idx) {
-}     // TODO: add value at idx from data structure
-int get_answer() {
-}     // TODO: extract the current answer of the data structure
-
-const int block_size; // TODO: Add Block_size
-
-struct Query {
-    int l, r, idx;
-    bool operator<(Query other) const {
-        return make_pair(l / block_size, r) < make_pair(other.l / block_size, other.r);
+const int blk = 400;
+struct query {
+    int id, l, r;
+    bool operator<(query b) const {
+        if (l / blk != b.l / blk)
+            return  make_pair(l / blk, r) < make_pair(b.l / blk, b.r);
+        return (l / blk & 1) ? (r < b.r) : (r > b.r);
     }
 };
 
-vector<int> mo_s_algorithm(vector<Query>& queries) {
-    vector<int> answers(queries.size());
-    sort(queries.begin(), queries.end(), [&](Query& p, Query& q) {
-        if (p.l / block_size != q.l / block_size)
-            return p < q;
-        return (p.l / block_size & 1) ? (p.r < q.r) : (p.r > q.r);
-        });
-    // TODO: initialize data structure
-    int cur_l = 0;
-    int cur_r = -1;
-    // invariant: data structure will always reflect the range [cur_l, cur_r]
-    for (Query q : queries) {
-        while (cur_l > q.l) {
+vector<int> mos_algo(vector<query>& q) {
+    sort(begin(q), end(q));
+    int m = q.size();
+    int cur_r = -1, cur_l = 0, cur = 0;
+    vector<int> ans(m);
+
+    auto add = [&](int i) {
+
+    };
+
+    auto remove = [&](int i) {
+
+    };
+
+    auto get_ans = [&]() {
+
+    };
+
+    for (auto x : q) {
+        while (cur_l > x.l) {
             cur_l--;
             add(cur_l);
         }
-        while (cur_r < q.r) {
-            cur_r++;
-            add(cur_r);
-        }
-        while (cur_l < q.l) {
+        while (cur_l < x.l) {
             remove(cur_l);
             cur_l++;
         }
-        while (cur_r > q.r) {
+        while (cur_r > x.r) {
             remove(cur_r);
             cur_r--;
         }
-        answers[q.idx] = get_answer();
+        while (cur_r < x.r) {
+            cur_r++;
+            add(cur_r);
+        }
+        ans[x.id] = get_ans();
     }
-    return answers;
+
+    for (int i : ans)
+        cout << i << '\n';
 }
