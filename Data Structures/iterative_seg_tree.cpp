@@ -1,38 +1,49 @@
+template<typename T, typename V = T>
 struct seg_tree {
     int n;
-    typedef int item;
-    vector<item> tree;
-    const item NEUTRAL_ELEMENT = 0;
-    item merge(item a, item b) {
-        return a + b;
-    }
-    item single(int a) {
-        return a;
-    }
-    void init(int n) {
+    vector<T> tree;
+
+    seg_tree(int n) {
         this->n = n;
         tree.resize(2 * n);
     }
-    void build(vector<int>& a) {
+
+    seg_tree(vector<V>&a) {
+        n = a.size();
+        tree.resize(2 * n);
+        build(a);
+    }
+
+    void build(vector<V>& a) {
         for (int i = 0; i < n; i++)
-            tree[n + i] = single(a[i]);
+            tree[n + i] = T(a[i]);
         for (int i = n - 1; i > 0; --i)
-            tree[i] = merge(tree[i << 1], tree[i << 1 | 1]);
+            tree[i] = T::merge(tree[i << 1], tree[i << 1 | 1]);
     }
-    void update(int p, int value) {
-        tree[p + n] = single(value);
-        p += n;
-        for (int i = p; i > 1; i >>= 1)
-            tree[i >> 1] = merge(tree[i], tree[i ^ 1]);
+
+    void update(int i, T value) {
+        tree[i += n] = value;
+        for (; i >>= 1; )
+            tree[i] = T::merge(tree[i << 1], tree[i << 1 | 1]);
     }
-    item query(int l, int r) {
-        item res = NEUTRAL_ELEMENT;
+
+    T query(int l, int r) {
+        T resl, resr;
         for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
             if (l & 1)
-                res = merge(res, tree[l++]);
+                resl = T::merge(resl, tree[l++]);
             if (r & 1)
-                res = merge(res, tree[--r]);
+                resr = T::merge(tree[--r], resr);
         }
-        return res;
+        return T::merge(resl, resr);
+    }
+};
+
+struct item {
+    int val;
+    item(): val(0) {}
+    item(int x): val(x) {}
+    static item merge(item& x, item&y) {
+        return item(max(x.val, y.val));
     }
 };

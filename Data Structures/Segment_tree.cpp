@@ -1,64 +1,71 @@
+template<typename T, typename V = T>
 struct seg_tree {
-    int size;
-    typedef int64_t item;
-    vector<item> values;
-    const item NEUTRAL_ELEMENT = 0;
+    int size, n;
+    vector<T> values;
 
-    inline item merge(item a, item b) {
-        return a + b;
-    }
-
-    inline item single(int a) {
-        return a;
-    }
-
-    void init(int n) {
+    seg_tree(vector<V> &a) : n(a.size()) {
         size = 1;
         while (size < n) size *= 2;
-        values.assign(2 * size, NEUTRAL_ELEMENT);
+        values.resize(2 * size);
+        build(a);
     }
 
-    void set(int i, int v, int x, int lx, int rx) {
+    seg_tree(int N) : n(N) {
+        size = 1;
+        while (size < n) size *= 2;
+        values.resize(2 * size);
+    }
+
+    void update(int i, T& v, int x, int lx, int rx) {
         if (rx - lx == 1) {
-            values[x] = single(v);
+            values[x] = v;
             return;
         }
-        int m = (lx + rx) / 2;
-        if (i < m) set(i, v, 2 * x + 1, lx, m);
-        else set(i, v, 2 * x + 2, m, rx);
-        values[x] = merge(values[2 * x + 1], values[2 * x + 2]);
+        int m = (lx + rx) >> 1;
+        if (i < m) update(i, v, 2 * x + 1, lx, m);
+        else update(i, v, 2 * x + 2, m, rx);
+        values[x] = T::merge(values[2 * x + 1], values[2 * x + 2]);
     }
 
-    void set(int i, int v) {
-        set(i, v, 0, 0, size);
+    void update(int i, T v) {
+        update(i, v, 0, 0, size);
     }
 
-    void build(vector<int> &a, int x, int lx, int rx) {
+    void build(vector<V> &a, int x, int lx, int rx) {
         if (rx - lx == 1) {
-            if (lx < (int)a.size())
-                values[x] = single(a[lx]);
+            if (lx < n)
+                values[x] = a[lx];
             return;
         }
-        int m = (lx + rx) / 2;
+        int m = (lx + rx) >> 1;
         build(a, 2 * x + 1, lx, m);
         build(a, 2 * x + 2, m, rx);
-        values[x] = merge(values[2 * x + 1], values[2 * x + 2]);
+        values[x] = T::merge(values[2 * x + 1], values[2 * x + 2]);
     }
 
-    void build(vector<int> &a) {
+    void build(vector<V> &a) {
         build(a, 0, 0, size);
     }
 
-    item calc(int l, int r, int x, int lx, int rx) {
-        if (lx >= r or l >= rx) return NEUTRAL_ELEMENT;
+    T query(int l, int r, int x, int lx, int rx) {
+        if (lx >= r or l >= rx) return T();
         if (lx >= l and rx <= r) return values[x];
-        int m = (lx + rx) / 2;
-        item s1 = calc(l, r, 2 * x + 1, lx, m);
-        item s2 = calc(l, r, 2 * x + 2, m, rx);
-        return merge(s1, s2);
+        int m = (lx + rx) >> 1;
+        T s1 = query(l, r, 2 * x + 1, lx, m);
+        T s2 = query(l, r, 2 * x + 2, m, rx);
+        return T::merge(s1, s2);
     }
 
-    item calc(int l, int r) {
-        return calc(l, r, 0, 0, size);
+    T query(int l, int r) {
+        return query(l, r, 0, 0, size);
+    }
+};
+
+struct item {
+    int val;
+    item(): val(0) {}
+    item(int x): val(x) {}
+    static item merge(item& x, item&y) {
+        return item(max(x.val, y.val));
     }
 };
