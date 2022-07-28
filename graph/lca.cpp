@@ -1,13 +1,15 @@
+const int LG = 20;
 struct LCA {
-    const int LG = 20;
-    vector<vector<int>> dp, adj;
+    vector<array<int, LG>> dp;
     vector<int> tin, tout;
-    int n, timer = 0;
+    int n, timer;
 
     LCA(vector<vector<int>>& adj, int root = 0) : n(adj.size()) {
-        dp.resize(n, vector<int>(LG));
+        dp.resize(n);
         tin.resize(n);
         tout.resize(n);
+        timer = 0;
+        
         dfs(adj, root, root);
     };
 
