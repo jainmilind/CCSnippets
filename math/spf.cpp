@@ -21,3 +21,12 @@ void prime_sieve(int MAX_PR) {
         if (is_prime[i])
             primes.push_back(i);
 }
+
+vector<int> get_fact(int x) {
+    vector<int> ret;
+    while (x != 1) {
+        ret.push_back(spf[x]);
+        x /= spf[x];
+    }
+    return ret;
+}
