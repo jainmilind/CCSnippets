@@ -46,6 +46,5 @@ vector<int> mos_algo(vector<query>& q) {
         ans[x.id] = get_ans();
     }
 
-    for (int i : ans)
-        cout << i << '\n';
+    return ans;
 }
